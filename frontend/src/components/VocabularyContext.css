@@ -1,0 +1,75 @@
+.vocabulary-context {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.context-selector {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.context-button {
+  padding: 12px 24px;
+  font-size: 1.1em;
+  border: none;
+  border-radius: 25px;
+  background: #f0f2f5;
+  color: #2c3e50;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.context-button:hover {
+  background: #e4e6e9;
+  transform: translateY(-2px);
+}
+
+.context-button.active {
+  background: #3498db;
+  color: white;
+  box-shadow: 0 4px 8px rgba(52,152,219,0.3);
+}
+
+.vocabulary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  padding: 20px 0;
+}
+
+.loading-spinner {
+  text-align: center;
+  padding: 40px;
+  font-size: 1.2em;
+  color: #7f8c8d;
+}
+
+@media (max-width: 768px) {
+  .vocabulary-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+
+  .context-button {
+    padding: 10px 20px;
+    font-size: 1em;
+  }
+}
+
+@media (max-width: 480px) {
+  .vocabulary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .context-selector {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .context-button {
+    width: 100%;
+  }
+}

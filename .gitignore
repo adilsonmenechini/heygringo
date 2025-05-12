@@ -1,0 +1,11 @@
+**/logs/*
+**/sessions/*
+**/node_modules
+node_modules
+sessions/*
+logs/*
+__pycache__
+.env
+.env.test
+venv
+

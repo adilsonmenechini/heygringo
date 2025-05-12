@@ -1,0 +1,48 @@
+/* src/components/RewardFeedback.css */
+.reward-feedback {
+  position: fixed;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  border-radius: 16px;
+  color: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  animation: popup 0.5s ease-out, float 2s ease-in-out infinite alternate;
+  min-width: 250px;
+}
+
+.reward-icon {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.reward-message {
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.reward-points {
+  font-size: 16px;
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 5px 12px;
+  border-radius: 20px;
+  margin-top: 5px;
+}
+
+@keyframes popup {
+  0% { transform: translateX(-50%) scale(0.5); opacity: 0; }
+  70% { transform: translateX(-50%) scale(1.1); }
+  100% { transform: translateX(-50%) scale(1); opacity: 1; }
+}
+
+@keyframes float {
+  0% { transform: translateX(-50%) translateY(0); }
+  100% { transform: translateX(-50%) translateY(-10px); }
+}

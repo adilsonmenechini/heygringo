@@ -1,0 +1,45 @@
+.teacher-message {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.teacher-message p {
+  margin: 15px 0;
+  line-height: 1.6;
+  color: #2c3e50;
+}
+
+.message-section {
+  margin: 25px 0;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+
+.message-section h4 {
+  color: #3498db;
+  margin: 0 0 10px 0;
+  font-size: 1.1em;
+}
+
+.message-section em {
+  color: #34495e;
+}
+
+.translation {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.translation h4 {
+  color: #27ae60;
+}
+
+.translation p {
+  color: #7f8c8d;
+}
