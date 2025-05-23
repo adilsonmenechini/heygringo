@@ -9,7 +9,8 @@ const ChatMessage = ({ sender, text, onPlayAudio }) => {
     if (!rawText || typeof rawText !== 'string') return [{ type: 'plain', content: rawText || '' }];
 
     const parts = [];
-    const regex = /\[(EN|PT|Explicação)\]\s*([\s\S]*?)(?=\n\[(EN|PT|Explicação)\]|$)/gi;
+    // Added 'Tip' and 'Dica' to the regex
+    const regex = /\[(EN|PT|Explicação|Tip|Dica)\]\s*([\s\S]*?)(?=\n\[(EN|PT|Explicação|Tip|Dica)\]|$)/gi;
     let match;
     let lastIndex = 0;
 
@@ -18,7 +19,11 @@ const ChatMessage = ({ sender, text, onPlayAudio }) => {
       if (match.index > lastIndex) {
         parts.push({ type: 'plain', content: rawText.substring(lastIndex, match.index) });
       }
-      const type = match[1].toLowerCase();
+      let type = match[1].toLowerCase();
+      // Normalize 'dica' to 'tip'
+      if (type === 'dica') {
+        type = 'tip';
+      }
       const content = match[2].trim();
       parts.push({ type, content });
       lastIndex = regex.lastIndex;
@@ -42,6 +47,8 @@ const ChatMessage = ({ sender, text, onPlayAudio }) => {
           return <p key={index} className="lang-pt" style={{ whiteSpace: 'pre-line' }}><strong>[PT]</strong> {part.content}</p>;
         } else if (part.type === 'explicação') {
           return <p key={index} className="explanation" style={{ whiteSpace: 'pre-line' }}><em>[Explicação]</em> {part.content}</p>;
+        } else if (part.type === 'tip') { // Added case for 'tip'
+          return <p key={index} className="tip-message" style={{ whiteSpace: 'pre-line' }}><strong>💡 Dica:</strong> {part.content}</p>;
         }
         // Preserva quebras de linha no texto simples
         return <p key={index} style={{ whiteSpace: 'pre-line' }}>{part.content}</p>; // Plain text or unparsed

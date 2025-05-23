@@ -61,6 +61,7 @@ def handle_chat_request(data):
     user_message = data.get('message')
     history = data.get('history', [])  # Histórico da conversa
     student_id = data.get('student_id') or str(uuid.uuid4())
+    current_scenario = data.get('current_scenario') # Extract current_scenario
 
     if not user_message:
         warning("Requisição sem mensagem", student_id=student_id)
@@ -84,6 +85,16 @@ def handle_chat_request(data):
     """
 
     messages_for_ollama = [{"role": "system", "content": enhanced_prompt}]
+
+    # Conditionally add contextual system message for Ollama
+    if current_scenario:
+        contextual_system_message = {
+            "role": "system",
+            "content": f"The student is currently focused on a '{current_scenario}' scenario. Please tailor your conversation, examples, and any exercises specifically to this context. Encourage role-playing within this scenario if appropriate. Maintain the established persona of Hey Gringo!."
+        }
+        # Insert after the main system prompt, which is the first message
+        messages_for_ollama.insert(1, contextual_system_message)
+
     for msg in history:
         messages_for_ollama.append({"role": msg['sender'], "content": msg['text']})
     messages_for_ollama.append({"role": "user", "content": user_message})

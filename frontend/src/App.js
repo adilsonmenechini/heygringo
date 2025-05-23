@@ -6,7 +6,7 @@ import StudentLogin from './components/StudentLogin';
 import ProgressBar from './components/ProgressBar';
 import LessonCard from './components/LessonCard';
 import RewardFeedback from './components/RewardFeedback';
-import { fetchAIResponse, synthesizeSpeech, transcribeAudio } from './services/api';
+import { fetchAIResponse, synthesizeSpeech, transcribeAudio, fetchLessons } from './services/api'; // Added fetchLessons
 import './App.css';
 
 
@@ -14,6 +14,8 @@ import './App.css';
 function App() {
   const [student, setStudent] = useState(null);
   const [messages, setMessages] = useState([]);
+  const [lessons, setLessons] = useState([]); // Added lessons state
+  const [currentActiveScenario, setCurrentActiveScenario] = useState(null); // Added currentActiveScenario state
   const [userLevel, setUserLevel] = useState(1);
   const [userPoints, setUserPoints] = useState(0);
   const [userStreak, setUserStreak] = useState(1);
@@ -30,6 +32,19 @@ function App() {
           text: `Olá ${student.name}! Sou a Hey Gringo!, sua parceira pra desenrolar no inglês. Bora começar? Manda sua primeira dúvida ou só um 'oi'!` 
         }
       ]);
+
+      // Fetch lessons
+      const loadLessons = async () => {
+        try {
+          const fetchedLessons = await fetchLessons();
+          setLessons(fetchedLessons);
+        } catch (error) {
+          console.error("Failed to load lessons:", error);
+          // Optionally, set some default lessons or show an error message
+          // For now, it will just log the error and lessons will be an empty array
+        }
+      };
+      loadLessons();
     }
   }, [student]);
   
@@ -58,13 +73,15 @@ function App() {
     }));
 
     try {
-      const response = await fetchAIResponse(userInput, chatHistoryForApi);
-      // Verifica se a resposta é um objeto com a propriedade reply ou apenas texto
-      const aiReplyText = typeof response === 'object' && response.reply ? response.reply : response;
+      // Pass student.id and currentActiveScenario
+      const response = await fetchAIResponse(userInput, chatHistoryForApi, student.id, currentActiveScenario);
+      // Assuming response is now the full object from backend, including points, level, etc.
+      const aiReplyText = response.reply; // Access the 'reply' field
       addMessage('ai', aiReplyText);
       
       // Atualizar pontos e mostrar recompensa
-      const pointsEarned = typeof response === 'object' && response.points_earned ? response.points_earned : 5;
+      // The backend now sends a more structured response.
+      const pointsEarned = response.points_earned || 0; // Default to 0 if not present
       const newPoints = userPoints + pointsEarned;
       setUserPoints(newPoints);
       
@@ -146,8 +163,9 @@ function App() {
             text: msg.text
         }));
         
-        const aiResponse = await fetchAIResponse(transcribedText, chatHistoryForApi);
-        const aiReplyText = typeof aiResponse === 'object' && aiResponse.reply ? aiResponse.reply : aiResponse;
+        const aiResponse = await fetchAIResponse(transcribedText, chatHistoryForApi, student.id, currentActiveScenario);
+        // Assuming aiResponse is now the full object
+        const aiReplyText = aiResponse.reply; // Access the 'reply' field
         addMessage('ai', aiReplyText);
         
         if (autoPlayAudio) {
@@ -197,30 +215,7 @@ function App() {
     setShowLessons(!showLessons);
   };
   
-  // Dados de exemplo para as lições
-  const lessonData = [
-    {
-      title: "Saudações Básicas",
-      description: "Aprenda a se apresentar e cumprimentar pessoas",
-      icon: "👋",
-      completed: progress === 100,
-      locked: false
-    },
-    {
-      title: "No Café",
-      description: "Vocabulário para pedir bebidas e comidas",
-      icon: "☕",
-      completed: false,
-      locked: progress < 100
-    },
-    {
-      title: "Fazendo Compras",
-      description: "Como comprar itens e perguntar preços",
-      icon: "🛒",
-      completed: false,
-      locked: progress < 100
-    }
-  ];
+  // Hardcoded lessonData is now replaced by 'lessons' state fetched from API
   
   if (!student) {
     return <StudentLogin onLogin={handleLogin} />;
@@ -260,19 +255,20 @@ function App() {
       {showLessons ? (
         <div className="lessons-container">
           <h2>Suas Lições</h2>
-          {lessonData.map((lesson, index) => (
+          {lessons.map((lesson, index) => ( // Changed lessonData to lessons
             <LessonCard 
-              key={index}
+              key={lesson.id || index} // Prefer lesson.id if available
               title={lesson.title}
               description={lesson.description}
               icon={lesson.icon}
-              completed={lesson.completed}
-              locked={lesson.locked}
+              // completed={lesson.completed} // Backend might need to provide this
+              // locked={lesson.locked}     // Backend might need to provide this
               onSelect={() => {
-                setShowLessons(false); // Voltar para o chat ao selecionar uma lição
-                if (!lesson.completed && !lesson.locked) {
-                  addMessage('ai', `Vamos praticar "${lesson.title}"! O que você gostaria de saber?`);
-                }
+                setShowLessons(false); // Voltar para o chat
+                setCurrentActiveScenario(lesson.id); // Set the active scenario using lesson.id
+                // Assuming 'completed' and 'locked' might come from backend or be managed differently
+                // For now, let's assume selecting a lesson always starts it.
+                addMessage('ai', `Vamos praticar "${lesson.title}"! O que você gostaria de saber ou fazer primeiro neste cenário?`);
               }}
             />
           ))}

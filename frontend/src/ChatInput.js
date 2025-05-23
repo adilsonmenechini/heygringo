@@ -57,7 +57,7 @@ const ChatInput = ({ onSendMessage, onSendAudio, isLoading }) => {
         type="text"
         value={inputValue}
         onChange={handleInputChange}
-        placeholder={isLoading ? "Aguarde a Hey Gringo!..." : "Digite sua mensagem ou dúvida..."}
+        placeholder={isLoading ? "Aguarde a Hey Gringo!..." : "Converse com a Hey Gringo aqui ou tire uma dúvida :)"}
         disabled={isLoading || isRecording}
       />
       <button type="button" onClick={toggleRecording} disabled={isLoading} className="mic-button">

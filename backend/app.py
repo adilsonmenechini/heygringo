@@ -4,7 +4,7 @@ from flask_cors import CORS
 from core.chat_handler import handle_chat_request
 from core.speech_handler import SpeechHandler
 from core.config import FLASK_CONFIG, TTS_CONFIG
-from core.routes import api
+from core.routes import api, lessons_bp # Added lessons_bp
 from utils.logger import info, error, debug, warning
 import os
 import time
@@ -15,6 +15,7 @@ CORS(app)  # Para permitir requisições do frontend React
 
 # Registrar blueprint da API
 app.register_blueprint(api, url_prefix='/api')
+app.register_blueprint(lessons_bp) # Registering the new lessons_bp
 
 # Inicializar o manipulador de fala
 speech_handler = SpeechHandler()

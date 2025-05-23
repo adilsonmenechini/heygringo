@@ -1,24 +1,53 @@
 // src/services/api.js
 const API_BASE_URL = 'http://localhost:5001/api'; // URL do seu backend Python/Flask
 
-export const fetchAIResponse = async (message, history) => {
+export const fetchLessons = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/lessons`);
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching lessons:", error);
+    throw error; // Re-throw to allow caller to handle
+  }
+};
+
+export const fetchAIResponse = async (message, history, student_id, scenario = null) => {
+  const payload = {
+    message: message,
+    history: history,
+    student_id: student_id // Added student_id
+  };
+
+  if (scenario) {
+    payload.current_scenario = scenario; // Conditionally add scenario
+  }
+
   try {
     const response = await fetch(`${API_BASE_URL}/chat`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ message, history }),
+      body: JSON.stringify(payload), // Use the constructed payload
     });
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
     }
     const data = await response.json();
-    return data.reply;
+    // The backend now returns a more complex object, not just data.reply
+    // For now, let's assume App.js will handle the new structure, so return full data.
+    return data; 
   } catch (error) {
     console.error("Error fetching AI response:", error);
-    return `Desculpe, tive um problema para conectar com a IA: ${error.message}`;
+    // Let's re-throw the error so App.js can handle it, e.g. display a message
+    throw error; 
+    // Old: return `Desculpe, tive um problema para conectar com a IA: ${error.message}`;
   }
 };
 
